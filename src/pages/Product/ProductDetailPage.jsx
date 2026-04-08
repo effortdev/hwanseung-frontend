@@ -60,6 +60,8 @@ export default function ProductDetailPage() {
             ? productImages[selectedImageIndex].imagePath
             : null;
 
+            console.log("받은 상품사진", product);
+            console.log("이미지 데이터들?", productImages);
     if (loading) {
         return (
             <div className="product-detail-page">
