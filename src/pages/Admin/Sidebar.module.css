@@ -169,6 +169,18 @@ header .imageText .profession {
   color: var(--text-color);
 }
 
+.sidebar .navLink.active a {
+  background-color: var(--primary-color);
+}
+.sidebar .navLink.active a .icon,
+.sidebar .navLink.active a .navText {
+  color: #fff;
+}
+:global(body.dark) .sidebar .navLink.active a .icon,
+:global(body.dark) .sidebar .navLink.active a .navText {
+  color: var(--text-color);
+}
+
 
 .sidebar .menuBar {
   height: calc(100% - 55px);

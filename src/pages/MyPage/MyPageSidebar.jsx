@@ -65,7 +65,7 @@ export default function MyPageSidebar({ userInfo }) {
             <div className="sidebar-pay">
                 {/* 🌟 매직으로 쓴 가짜 숫자 대신, 받아온 진짜 balance를 씁니다. */}
                 {/* 💡 toLocaleString() 함수를 쓰면 2450 -> 2,450 처럼 예쁘게 콤마(,)가 찍힙니다! */}
-                <p>환승Pay <b>₩ {balance.toLocaleString()}</b></p>
+                <p style={{ color: '#00D27A', fontSize: '16px', fontWeight: 'bold' }}>환승Pay <b>₩ {balance.toLocaleString()}</b></p>
             </div>
 
             {/* 메뉴 네비게이션 */}

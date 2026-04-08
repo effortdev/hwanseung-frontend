@@ -1,0 +1,134 @@
+
+/* 상단 타이틀 영역 */
+.sales-title {
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    font-size: 22px;
+    color: var(--text-main, #333);
+}
+
+.sales-title i {
+    margin-right: 10px;
+    color: var(--accent-color, #00d26a);
+}
+
+/* 상품이 없을 때 (빈 화면) */
+.sales-empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: #888;
+}
+
+.sales-empty-state i {
+    font-size: 50px;
+    margin-bottom: 20px;
+    color: #eeeeee;
+}
+
+.sales-first-btn {
+    margin-top: 20px;
+    padding: 12px 24px;
+    background-color: var(--accent-color, #00d26a);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sales-first-btn:hover {
+    background-color: var(--accent-hover, #00b35a);
+}
+
+/* 상품 목록 영역 */
+.sales-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.sales-list-item {
+    display: flex;
+    border: 1px solid #eeeeee;
+    border-radius: 16px;
+    padding: 20px;
+    cursor: pointer;
+    align-items: center;
+    background: var(--white, #ffffff);
+    transition: all 0.2s ease;
+}
+
+/* 마우스 올렸을 때 액션 */
+.sales-list-item:hover {
+    box-shadow: var(--shadow-soft, 0 10px 25px rgba(0,0,0,0.05));
+    border-color: var(--accent-color, #00d26a);
+    transform: translateY(-2px);
+}
+
+.sales-item-thumb {
+    width: 90px;
+    height: 90px;
+    background-color: #f5f5f5;
+    border-radius: 12px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.sales-item-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.sales-item-thumb span {
+    font-size: 12px;
+    color: #ccc;
+    font-weight: 500;
+}
+
+.sales-item-info {
+    flex: 1;
+}
+
+.sales-item-category {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.sales-item-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main, #333);
+    margin-bottom: 8px;
+}
+
+.sales-item-price {
+    font-size: 16px;
+    color: var(--accent-color, #00d26a);
+    font-weight: 700;
+}
+
+/* 판매 상태 뱃지 */
+.sales-status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.sales-status-badge.selling {
+    background-color: rgba(0, 210, 106, 0.1);
+    color: var(--accent-color, #00d26a);
+}
+
+.sales-status-badge.sold-out {
+    background-color: #f4f6f8;
+    color: #a0a0a0;
+}

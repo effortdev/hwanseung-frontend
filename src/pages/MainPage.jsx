@@ -1,21 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import './MainPage.css';
-import AdminChat from '../pages/Chat/AdminChat';
-import FloatingChat from './Chat/FloatingChat';
 import { useNavigate } from 'react-router-dom';
-
+import { fetchCategories } from '../api/CategoriesAPI';
+import axios from 'axios';
 
 /* ── 데이터 ── */
 // 변경 후
 const categories = [
-    { emoji: '📱', label: '디지털기기' },
-    { emoji: '👕', label: '의류/잡화' },
-    { emoji: '🛋️', label: '가구/인테리어' },
-    { emoji: '🍳', label: '생활/가전' },
-    { emoji: '🎨', label: '취미/도서' },
-    { emoji: '⚽', label: '스포츠/레저' },
-    { emoji: '🎫', label: '티켓/교환권' },
-    { emoji: '✨', label: '전체보기' },
+    { emoji: '📱', label: '디지털기기', key: 'digital' },
+    { emoji: '👕', label: '의류/잡화', key: 'fashion' },
+    { emoji: '🛋️', label: '가구/인테리어', key: 'furniture' },
+    { emoji: '🍳', label: '생활/가전', key: 'life' },
+    { emoji: '🎨', label: '취미/도서', key: 'hobby' },
+    { emoji: '⚽', label: '스포츠/레저', key: 'sports' },
+    { emoji: '🎫', label: '티켓/교환권', key: 'ticket' },
+    { emoji: '✨', label: '전체보기', key: 'all' },
 ];
 
 // 확장 시 보여줄 추가 카테고리 (빈칸 8개)
@@ -43,7 +42,7 @@ const products = [
 
 const liveFeedData = [
     { user: '망원동 김*님', item: '맥북 에어', icon: 'fas fa-gift', status: '환승 완료' },
-    { user: '성수동 이*님', item: '캠핑 체어', icon: 'fas fa-handshake', status: '매칭 중' },
+    { user: '성수동 이*님', item: '캠핑 체어', icon: 'fas fa-handshake', status: '매칭' },
     { user: '논현동 박*님', item: '자전거', icon: 'fas fa-bolt', status: '환승 완료' },
     { user: '판교동 최*님', item: '에어팟 맥스', icon: 'fas fa-star', status: '방금 업로드' },
     { user: '잠실동 정*님', item: 'PS5 슬림', icon: 'fas fa-fire', status: '환승 완료' },
@@ -97,6 +96,35 @@ const MainPage = () => {
     // 숫자 롤링
     const statValues = stats.map(s => useCountUp(s.value, 2200, statsVisible));
 
+    //백엔드에서 진짜 가져오기 
+    const [realProducts, setRealProducts] = useState([]);
+
+    // 🌟 2. 화면이 처음 켜질 때 백엔드 창고에서 물건 가져오기
+   useEffect(() => {
+        const fetchRealProducts = async () => {
+            try {
+                const response = await axios.get('/api/products');
+                
+                // 🚨 기존 코드: 도착한 데이터를 그대로 바구니에 담음 (최신순)
+                // setRealProducts(response.data);
+
+                // 🌟 [수정된 코드] 도착한 데이터를 '찜(likeCount)'이 많은 순서대로 줄 세웁니다!
+                const popularProducts = response.data.sort((a, b) => {
+                    return (b.likeCount || 0) - (a.likeCount || 0); // 내림차순 정렬
+                });
+
+                // 1등부터 8등까지만 딱 잘라서(slice) 보여주는 것이 좋습니다!
+                const top8Products = popularProducts.slice(0, 8);
+
+                // 정렬되고 잘라진 1~8등 상품들을 바구니에 담습니다.
+                setRealProducts(top8Products);
+
+            } catch (error) {
+                console.error("인기 매물을 불러오지 못했습니다.", error);
+            }
+        };
+        fetchRealProducts();
+    }, []);
     // Hero 등장 애니메이션
     useEffect(() => {
         const timer = setTimeout(() => setHeroVisible(true), 100);
@@ -226,13 +254,17 @@ const MainPage = () => {
                 <div className="container">
                     <div className="category-grid">
                         {categories.map((cat, idx) => (
-                            <a href="#" key={idx}
+                            <button
+                                type="button"
+                                key={idx}
                                 className="category-item"
-                                onClick={(e) => {
-                                    if (cat.label === '전체보기') {
-                                        e.preventDefault();
+                                onClick={() => {
+                                    if (cat.key === 'all') {
                                         setShowAllCategories(prev => !prev);
+                                        return;
                                     }
+
+                                    navigate(`/products?category=${cat.key}`);
                                 }}
                             >
                                 <div className="category-icon-wrap">
@@ -243,17 +275,21 @@ const MainPage = () => {
                                         ? (showAllCategories ? '접기' : '전체보기')
                                         : cat.label}
                                 </span>
-                            </a>
+                            </button>
                         ))}
 
                         {/* 확장된 추가 카테고리 */}
                         {showAllCategories && extraCategories.map((cat, idx) => (
-                            <a href="#" key={`extra-${idx}`} className="category-item">
+                            <button
+                                type="button"
+                                key={`extra-${idx}`}
+                                className="category-item"
+                            >
                                 <div className="category-icon-wrap">
                                     <span className="category-emoji">{cat.emoji}</span>
                                 </div>
                                 <span className="category-label">{cat.label}</span>
-                            </a>
+                            </button>
                         ))}
                     </div>
                 </div>
@@ -290,22 +326,37 @@ const MainPage = () => {
                         </a>
                     </div>
 
-                    <div className="product-grid">
-                        {products.map((product, idx) => (
+                  <div className="product-grid">
+                        {/* 🌟 수정 완료: 진짜 매물 바구니(realProducts)에서 하나씩(product) 꺼냅니다! */}
+                        {realProducts.map((product, idx) => (
                             <article
-                                key={product.id}
+                                key={product.productId}
                                 className={`product-card ${visibleCards.has(idx) ? 'visible' : ''}`}
                                 ref={el => cardsRef.current[idx] = el}
                                 data-index={idx}
-                                style={{ transitionDelay: '0.08s' }}
+                                style={{ transitionDelay: '0.08s', cursor: 'pointer' }}
+                                onClick={() => navigate(`/products/${product.productId}`)}
                             >
-                                <div className="product-image" style={{ backgroundColor: product.color }}>
-                                    <span className="product-emoji">{product.img}</span>
-                                    {product.badge && (
-                                        <span className="product-badge">
-                                            <i className="fas fa-shield-alt"></i> {product.badge}
+                                <div className="product-image" style={{ backgroundColor: '#f8f9fa' }}>
+                                    
+                                    {/* 진짜 썸네일 이미지 출력 */}
+                                    {product.thumbnailUrl ? (
+                                        <img 
+                                            src={`http://localhost:8080${product.thumbnailUrl}`} 
+                                            alt={product.title} 
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                                        />
+                                    ) : (
+                                        <span className="product-emoji">📦</span>
+                                    )}
+
+                                    {/* 판매완료 상태면 회색 뱃지 표시 */}
+                                    {product.saleStatus === 'SOLD_OUT' && (
+                                        <span className="product-badge" style={{ backgroundColor: '#555', color: 'white' }}>
+                                            판매완료
                                         </span>
                                     )}
+                                    
                                     <button className="product-like-btn">
                                         <i className="far fa-heart"></i>
                                     </button>
@@ -316,11 +367,11 @@ const MainPage = () => {
                                     <div className="product-meta">
                                         <span className="product-location">
                                             <i className="fas fa-map-marker-alt"></i>
-                                            {product.location} · {product.time}
+                                            {product.location}
                                         </span>
                                         <div className="product-stats">
-                                            <span><i className="far fa-heart"></i> {product.likes}</span>
-                                            <span><i className="far fa-comment"></i> {product.chats}</span>
+                                            <span><i className="far fa-heart"></i> {product.likeCount || 0}</span>
+                                            <span><i className="far fa-comment"></i> {product.chatCount || 0}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -407,9 +458,9 @@ const MainPage = () => {
                                 </span>
                             </div>
                         </div>
-                        <button className="safety-cta">
+                        {/* <button className="safety-cta">
                             가이드 보기 <i className="fas fa-arrow-right"></i>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </section>
@@ -460,8 +511,6 @@ const MainPage = () => {
                     </div>
                 </div>
             </section>
-            {/* <AdminChat /> */}
-            <FloatingChat />
         </div>
     );
 };

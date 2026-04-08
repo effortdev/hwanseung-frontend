@@ -61,6 +61,7 @@
     border-radius: 28px;
     overflow: hidden;
     box-shadow: 0 14px 34px rgba(17, 24, 39, 0.06);
+    position: relative;
 }
 
 .product-detail-image {
@@ -84,6 +85,22 @@
     font-size: 28px;
     font-weight: 800;
     color: var(--brand-color);
+}
+
+.product-soldout-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.58);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.6px;
+    backdrop-filter: blur(2px);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .product-thumbnail-list {
@@ -155,6 +172,12 @@
     color: #6b7280;
 }
 
+.detail-chip.soldout {
+    background: #111827;
+    color: #ffffff;
+    border: 1px solid #111827;
+}
+
 .detail-title {
     margin: 0 0 18px;
     font-size: 34px;
@@ -218,14 +241,27 @@
 }
 
 .btn-like {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     border: 1px solid var(--border-color);
     background: #ffffff;
     color: #111827;
+    box-shadow: 0 8px 18px rgba(17, 24, 39, 0.04);
 }
 
 .btn-like:hover {
-    border-color: var(--brand-color);
-    color: var(--brand-color);
+    background: #ffffff;
+    border-color: #d1d5db;
+    color: #111827;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(17, 24, 39, 0.08);
+}
+
+.btn-like:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 12px rgba(17, 24, 39, 0.05);
 }
 
 .btn-chat {
@@ -238,6 +274,19 @@
 .btn-chat:hover {
     background: var(--brand-dark);
     transform: translateY(-1px);
+}
+
+.btn-chat:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-chat:disabled:hover {
+    background: #e5e7eb;
+    transform: none;
 }
 
 .detail-sub-buttons {
@@ -264,6 +313,7 @@
     background: #ffffff;
     border-color: var(--brand-color);
     color: var(--brand-color);
+    transform: translateY(-1px);
 }
 
 .product-detail-description-card {
@@ -316,6 +366,116 @@
     color: #dc2626;
 }
 
+/* 수정/삭제/판매완료 버튼 영역 */
+.detail-owner-buttons {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: nowrap;
+}
+
+/* 수정/삭제/판매완료 공통 버튼 */
+.detail-owner-buttons .btn-edit,
+.detail-owner-buttons .btn-delete,
+.detail-owner-buttons .btn-soldout {
+    min-width: 76px;
+    width: auto;
+    flex: 0 0 auto;
+    height: 38px;
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(17, 24, 39, 0.05);
+    white-space: nowrap;
+}
+
+.detail-owner-buttons .btn-edit {
+    background: #f8fafc;
+    border-color: #e5e7eb;
+    color: #374151;
+}
+
+.detail-owner-buttons .btn-edit:hover {
+    background: #eef2f7;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+}
+
+.detail-owner-buttons .btn-soldout {
+    min-width: 88px;
+    background: #111827;
+    border-color: #111827;
+    color: #ffffff;
+    box-shadow: 0 6px 14px rgba(17, 24, 39, 0.15);
+}
+
+.detail-owner-buttons .btn-soldout:hover {
+    background: #000000;
+    border-color: #000000;
+    transform: translateY(-1px);
+}
+
+.detail-owner-buttons .btn-delete {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #dc2626;
+}
+
+.detail-owner-buttons .btn-delete:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+}
+
+/* 찜 버튼 관련 */
+.like-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: #c4c9d1;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.like-icon.active {
+    color: #ff5a5f;
+}
+
+.btn-like:hover .like-icon {
+    transform: scale(1.08);
+}
+
+.like-text {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+}
+
+/* 본인껀 찜 불가능 */
+.btn-like:disabled {
+    background: #f3f4f6;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    /* cursor: not-allowed; */
+    box-shadow: none;
+}
+
+.btn-like:disabled:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-like:disabled .like-icon {
+    color: #d1d5db;
+}
+
 @media (max-width: 992px) {
     .product-detail-main {
         grid-template-columns: 1fr;
@@ -331,6 +491,10 @@
 
     .detail-price {
         font-size: 28px;
+    }
+
+    .product-soldout-overlay {
+        font-size: 26px;
     }
 }
 
@@ -370,5 +534,50 @@
         width: 72px;
         height: 72px;
         border-radius: 14px;
+    }
+
+    .product-soldout-overlay {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 576px) {
+    .detail-action-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .btn-like,
+    .btn-chat,
+    .btn-list-link {
+        height: 50px;
+        font-size: 14px;
+        border-radius: 14px;
+    }
+
+    .detail-owner-buttons {
+        gap: 8px;
+        margin-top: 12px;
+        flex-wrap: wrap;
+    }
+
+    .detail-owner-buttons .btn-edit,
+    .detail-owner-buttons .btn-delete,
+    .detail-owner-buttons .btn-soldout {
+        min-width: 68px;
+        height: 34px;
+        font-size: 12px;
+        border-radius: 10px;
+    }
+
+    .detail-owner-buttons .btn-soldout {
+        min-width: 78px;
+    }
+
+    .like-icon {
+        font-size: 17px;
+    }
+
+    .like-text {
+        font-size: 14px;
     }
 }

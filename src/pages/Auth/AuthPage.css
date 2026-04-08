@@ -1,14 +1,20 @@
 /* root 변수는 그대로 유지 */
 :root {
     /* 환승마켓 Signature Theme */
-    --bg-color: #f4f6f8;            /* Very light gray background */
-    --form-bg: #ffffff;             /* Clean white for forms */
-    --text-main: #333333;           /* Dark gray for primary text */
-    --text-secondary: #888888;      /* Lighter text */
-    --accent-color: #00d26a;        /* Vibrant Green from mockups */
-    --accent-hover: #00c060;        /* Slightly darker green for hover */
+    --bg-color: #f4f6f8;
+    /* Very light gray background */
+    --form-bg: #ffffff;
+    /* Clean white for forms */
+    --text-main: #333333;
+    /* Dark gray for primary text */
+    --text-secondary: #888888;
+    /* Lighter text */
+    --accent-color: #00d26a;
+    /* Vibrant Green from mockups */
+    --accent-hover: #00c060;
+    /* Slightly darker green for hover */
     --white: #ffffff;
-    
+
     /* Modern, soft drop shadows */
     --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.08);
     --shadow-light: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -38,7 +44,8 @@
     box-shadow: var(--shadow-soft);
     position: relative;
     overflow: hidden;
-    width: 860px; /* 넓이 증가 */
+    width: 860px;
+    /* 넓이 증가 */
     max-width: 100%;
     min-height: 580px;
     margin: 20px;
@@ -84,11 +91,15 @@
 }
 
 @keyframes show {
-    0%, 49.99% {
+
+    0%,
+    49.99% {
         opacity: 0;
         z-index: 1;
     }
-    50%, 100% {
+
+    50%,
+    100% {
         opacity: 1;
         z-index: 5;
     }
@@ -195,7 +206,7 @@
 .auth-page-wrapper .sub-text {
     font-size: 12px;
     color: var(--text-secondary);
-    margin-bottom: 15px;
+    margin: 15px;
     display: block;
 }
 
@@ -220,7 +231,8 @@
     text-align: left;
 }
 
-.auth-page-wrapper .input-group i, .auth-page-wrapper .input-wrapper i {
+.auth-page-wrapper .input-group i,
+.auth-page-wrapper .input-wrapper i {
     position: absolute;
     left: 20px;
     top: 50%;
@@ -232,13 +244,54 @@
 
 .auth-page-wrapper .input-group.with-btn {
     display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
+    /* ✨ 중요: 요소가 넘치면 다음 줄로 보냄 */
     align-items: center;
+    /* 입력창과 버튼의 높이 정렬 */
+    row-gap: 0px;
+    column-gap: 10px;
+    width: 100%;
+}
+
+.auth-page-wrapper .input-group.with-btn .input-wrapper {
+    flex: 1;
+    position: relative;
 }
 
 .auth-page-wrapper .input-wrapper {
     position: relative;
     flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.timer-text {
+    position: absolute;
+    right: 15px;
+    color: #007bff;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.timer-text.warning {
+    color: #ff4d4f;
+    /* 30초 미만일 때 빨간색 */
+}
+
+.resend-wrapper {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: #666;
+    text-align: center;
+}
+
+.resend-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 5px;
 }
 
 .auth-page-wrapper .scrollable-form {
@@ -280,7 +333,7 @@
     box-shadow: 0 0 0 3px rgba(0, 210, 106, 0.1);
 }
 
-.auth-page-wrapper input:focus + i {
+.auth-page-wrapper input:focus+i {
     color: var(--accent-color);
 }
 
@@ -325,7 +378,7 @@
 }
 
 .auth-page-wrapper .btn.ghost:hover {
-    background-color: rgba(255,255,255,0.15);
+    background-color: rgba(255, 255, 255, 0.15);
 }
 
 .auth-page-wrapper .social-login {
@@ -373,7 +426,7 @@
 
 .auth-page-wrapper .small-btn {
     padding: 13px 12px;
-    font-size: 13px;
+    font-size: 12px;
     white-space: nowrap;
     width: 90px;
     box-shadow: none;
@@ -498,9 +551,10 @@
     }
 
     .auth-page-wrapper .overlay-container {
-        display: none; /* Hide complex slider on mobile */
+        display: none;
+        /* Hide complex slider on mobile */
     }
-    
+
     .auth-page-wrapper .mobile-toggle {
         display: flex;
         justify-content: center;
@@ -521,13 +575,18 @@
     display: none;
 }
 
-.error-msg {
+.auth-page-wrapper .error-msg {
+    width: 100%;
+    /* ✨ 중요: 가로를 다 채워서 버튼 옆에 못 오게 함 */
+    display: block;
+    /* 확실하게 블록 요소로 지정 */
     color: #ff4d4f;
     font-size: 11px;
-    display: block;
-    text-align: left;
-    margin-top: 4px;
-    font-weight: 500;
+    margin-top: 5px;
+    /* 버튼/입력창과의 간격 */
+    padding-left: 5px;
+    order: 10;
+    /* flex 순서를 맨 뒤로 밀어 항상 아래에 위치 */
 }
 
 /* 주소 검색 모달 배경 (어둡게) */
@@ -538,7 +597,8 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 9998; /* 컨테이너 오버레이보다 높게 */
+    z-index: 9998;
+    /* 컨테이너 오버레이보다 높게 */
 }
 
 /* 주소 검색 모달 창 */
@@ -584,4 +644,11 @@
 
 .postcode-close-btn:hover {
     color: #333;
+}
+
+.gray-line {
+    border: 0;
+    height: 1px;
+    background-color: #d3d3d3;
+    margin: 15px 0;
 }

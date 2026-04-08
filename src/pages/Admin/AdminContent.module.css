@@ -1,0 +1,81 @@
+.container {
+    padding: 20px 60px;
+}
+
+.title {
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 24px;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--sidebar-color);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.cardIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: var(--primary-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: var(--primary-color);
+}
+
+.cardInfo {
+    display: flex;
+    flex-direction: column;
+}
+
+.cardLabel {
+    font-size: 13px;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.cardValue {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+.placeholder {
+    background: var(--sidebar-color);
+    border-radius: 12px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.placeholder i {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+}
+
+.placeholder p {
+    color: var(--text-color);
+    opacity: 0.6;
+    font-size: 15px;
+    margin-top: 8px;
+}

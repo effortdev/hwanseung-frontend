@@ -30,3 +30,4 @@ export const signUp = async (values) => {
     const response = await axios.post(`/api/auth/signup`, values); 
     return response.data;
 }
+

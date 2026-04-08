@@ -505,3 +505,138 @@
 .admin-btn:active {
   transform: scale(0.97);
 }
+/* ========================================= */
+/* 알림(Notification) 및 드롭다운 전용 스타일 */
+/* ========================================= */
+
+/* 알림 빨간색 뱃지 (읽지 않은 알림 수) */
+.noti-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background-color: #ff4d4f;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  border: 2px solid white;
+}
+
+/* 알림 전용 드롭다운 크기/위치 조정 */
+.noti-dropdown {
+  width: 320px;
+  right: -60px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* 알림 드롭다운 상단 헤더 (새로운 알림 / 모두 읽음) */
+.noti-header {
+  padding: 12px 15px;
+  font-weight: bold;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+}
+
+.noti-read-all {
+  font-size: 0.8em;
+  color: #007bff;
+  cursor: pointer;
+}
+
+.noti-read-all:hover {
+  text-decoration: underline;
+}
+
+/* 알림이 없을 때 */
+.noti-empty {
+  padding: 30px 15px;
+  text-align: center;
+  color: #999;
+  font-size: 0.9em;
+}
+
+/* 개별 알림 아이템 */
+.noti-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 15px;
+  background-color: #fff;
+  border-bottom: 1px solid #f5f5f5;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.noti-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* 🌟 안 읽은 알림일 때 배경색 변경 */
+.noti-item.unread {
+  background-color: #f0f8ff;
+}
+
+.noti-item.unread:hover {
+  background-color: #e6f2ff;
+}
+
+/* 알림 본문 상단 영역 (텍스트 + 삭제버튼) */
+.noti-item-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.noti-content {
+  font-size: 0.9em;
+  color: #333;
+  line-height: 1.4;
+  padding-right: 10px;
+}
+
+/* 알림 아이콘 색상 및 간격 */
+.noti-icon {
+  margin-right: 6px;
+}
+.noti-icon.heart { color: #ff4d4f; }
+.noti-icon.notice { color: #007bff; }
+
+/* 알림 개별 삭제 버튼 */
+.noti-delete-btn {
+  background: none;
+  border: none;
+  color: #ccc;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1.1em;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.noti-delete-btn:hover {
+  color: #ff4d4f;
+}
+
+/* 알림 시간 */
+.noti-date {
+  font-size: 0.75em;
+  color: #999;
+  width: 100%;
+}
+
+/* 하단 알림 전체보기 버튼 */
+.noti-view-all {
+  justify-content: center;
+  color: #666;
+  font-size: 0.85em;
+  border-top: 1px solid #eee;
+}
