@@ -415,6 +415,37 @@
     height: 400px;
 }
 
+/* 이미지 삭제 */
+.image-preview {
+    position: relative;
+}
+
+.image-remove-btn {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(17, 24, 39, 0.72);
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+
+.image-remove-btn:hover {
+    background: rgba(17, 24, 39, 0.9);
+    transform: scale(1.06);
+}
+
 @media (max-width: 768px) {
     .location-search-row {
         flex-direction: column;

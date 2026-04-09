@@ -236,16 +236,16 @@
 .product-thumb-empty {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #e8fff2 0%, #f7fffb 100%);
+    background: linear-gradient(135deg, #eefaf3 0%, #f8fcfa 100%);
     display: flex !important;
     align-items: center;
     justify-content: center;
 }
 
-.product-thumb-empty span {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--brand-color) !important;
+.product-thumb-empty-icon {
+    font-size: 44px;
+    line-height: 1;
+    opacity: 0.9;
 }
 
 .product-card-body {
@@ -310,7 +310,27 @@
     color: #c0c7d1 !important;
 }
 
-/* ✅ 수정: 하단 정렬 */
+.product-meta-location {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+}
+
+.product-meta-location-icon {
+    flex-shrink: 0;
+    font-size: 14px;
+    color: var(--brand-color);
+    position: relative;
+    top: -1px;
+}
+
+.product-meta-location-text {
+    display: inline-block;
+    min-width: 0;
+    word-break: break-all;
+}
+
 .product-card-bottom {
     display: flex;
     align-items: center;
@@ -325,14 +345,12 @@
     color: #6b7280 !important;
 }
 
-/* ✅ 추가: 찜/채팅 묶음 */
 .product-count-group {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-/* ✅ 수정: 찜 버튼 */
 .product-like-btn {
     display: inline-flex !important;
     align-items: center;
@@ -354,8 +372,7 @@
     z-index: 3;
     box-sizing: border-box;
     cursor: pointer;
-    position: relative;
-    top: -1px;
+    top: 0;
     appearance: none;
     -webkit-appearance: none;
 }
@@ -375,7 +392,7 @@
     transition: color 0.2s ease, transform 0.2s ease;
     flex-shrink: 0;
     position: relative;
-    top: -1px
+    top: -1px;
 }
 
 .product-like-icon.active {
@@ -414,7 +431,6 @@
     color: #c0c4cc !important;
 }
 
-/* ✅ 수정: 채팅 카운트 */
 .product-chat-count {
     display: inline-flex;
     align-items: center;
@@ -471,10 +487,6 @@
     color: #6b7280 !important;
 }
 
-.toolbar-right {
-    flex-shrink: 0;
-}
-
 .sort-button-group {
     display: flex;
     align-items: center;
@@ -507,6 +519,18 @@
     border-color: var(--brand-color);
     color: #ffffff;
     box-shadow: 0 10px 20px rgba(0, 210, 122, 0.18);
+}
+
+/* 예약중 글자색상 */
+.product-sale-status-text.reserved {
+    color: #ea580c !important;
+    font-weight: 800;
+}
+
+/* 무한스크롤 감지용 */
+.product-list-observer {
+    width: 100%;
+    height: 1px;
 }
 
 @media (max-width: 1200px) {

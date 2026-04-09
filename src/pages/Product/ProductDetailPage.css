@@ -87,6 +87,12 @@
     color: var(--brand-color);
 }
 
+.product-detail-image-empty-icon {
+    font-size: 64px !important;
+    line-height: 1;
+    color: inherit !important;
+}
+
 .product-soldout-overlay {
     position: absolute;
     inset: 0;
@@ -137,6 +143,21 @@
     height: 100%;
     object-fit: cover;
     background: #f8fafc;
+}
+
+.product-thumbnail-image-empty {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #eefaf3 0%, #f8fcfa 100%);
+}
+
+.product-thumbnail-image-empty-icon {
+    font-size: 28px;
+    line-height: 1;
+    opacity: 0.9;
 }
 
 .product-detail-info-card {
@@ -225,13 +246,14 @@
 
 .detail-action-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 12px;
     margin-bottom: 12px;
 }
 
 .btn-like,
-.btn-chat {
+.btn-chat,
+.btn-report {
     height: 54px;
     border-radius: 16px;
     font-size: 15px;
@@ -379,7 +401,9 @@
 /* 수정/삭제/판매완료 공통 버튼 */
 .detail-owner-buttons .btn-edit,
 .detail-owner-buttons .btn-delete,
-.detail-owner-buttons .btn-soldout {
+.detail-owner-buttons .btn-soldout,
+.detail-owner-buttons .btn-reserved,
+.detail-owner-buttons .btn-reserve-cancel {
     min-width: 76px;
     width: auto;
     flex: 0 0 auto;
@@ -476,6 +500,81 @@
     color: #d1d5db;
 }
 
+/* ✅ 추가: 예약중 칩 */
+.detail-chip.reserved {
+    background: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fdba74;
+}
+
+/* ✅ 추가: 예약중 오버레이 */
+.product-reserved-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(234, 88, 12, 0.18);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 900;
+    letter-spacing: -0.6px;
+    backdrop-filter: blur(2px);
+    z-index: 2;
+    pointer-events: none;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* ✅ 추가: 판매자 예약 버튼 */
+.detail-owner-buttons .btn-reserved {
+    background: #fff7ed;
+    border-color: #fdba74;
+    color: #ea580c;
+}
+
+.detail-owner-buttons .btn-reserved:hover {
+    background: #ffedd5;
+    border-color: #fb923c;
+    transform: translateY(-1px);
+}
+
+/* ✅ 추가: 예약해제 버튼 */
+.detail-owner-buttons .btn-reserve-cancel {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #2563eb;
+}
+
+.detail-owner-buttons .btn-reserve-cancel:hover {
+    background: #dbeafe;
+    border-color: #60a5fa;
+    transform: translateY(-1px);
+}
+
+/* 신고하기 버튼 */
+.btn-report {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 110px;
+    padding: 0 16px;
+    border: 1px solid #fecaca;
+    background: #fff1f2;
+    color: #dc2626;
+    box-sizing: border-box;
+}
+
+.btn-report:hover {
+    background: #ffe4e6;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+}
+
+.btn-report:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 @media (max-width: 992px) {
     .product-detail-main {
         grid-template-columns: 1fr;
@@ -536,6 +635,14 @@
         border-radius: 14px;
     }
 
+    .product-detail-image-empty-icon {
+        font-size: 52px !important;
+    }
+
+    .product-thumbnail-image-empty-icon {
+        font-size: 24px;
+    }
+
     .product-soldout-overlay {
         font-size: 22px;
     }
@@ -562,7 +669,9 @@
 
     .detail-owner-buttons .btn-edit,
     .detail-owner-buttons .btn-delete,
-    .detail-owner-buttons .btn-soldout {
+    .detail-owner-buttons .btn-soldout,
+    .detail-owner-buttons .btn-reserved,
+    .detail-owner-buttons .btn-reserve-cancel {
         min-width: 68px;
         height: 34px;
         font-size: 12px;

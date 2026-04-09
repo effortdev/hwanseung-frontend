@@ -43,18 +43,23 @@
     padding: 0 10px;
 }
 
+/* 사이드바 프로필 이미지 컨테이너 */
 .sidebar-profile .avatar {
-    width: 55px;
-    height: 55px;
-    background: #e8f9f0;
-    /* 로고 배경색 */
-    border-radius: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    color: var(--accent-color);
+    width: 80px;            /* 크기는 프로젝트 디자인에 맞춰 조절 */
+    height: 80px;
+    border-radius: 50%;     /* 🌟 이 설정이 핵심입니다 */
+    overflow: hidden;       /* 삐져나온 이미지 커팅 */
+    border: 2px solid #eee; /* 선택사항: 테두리 추가 */
+    margin: 0 auto;         /* 중앙 정렬 */
 }
+
+/* 내부 이미지 설정 */
+.sidebar-profile .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* 🌟 이미지가 찌그러지지 않게 함 */
+}
+
 
 .sidebar-profile .info {
     flex: 1;
@@ -66,7 +71,8 @@
 }
 
 .name-wrapper {
-    display: flex;
+    /* display: flex; */
+    flex-direction: column;
     align-items: center;
     width: 100%;
     /* 부모인 .info의 너비를 꽉 채움 */
@@ -80,6 +86,8 @@
     /* 이름이 길어져도 줄바꿈 방지 */
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-bottom: 10px;
+
 }
 
 .edit-profile-btn {

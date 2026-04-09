@@ -25,13 +25,13 @@ export default function ProductEditPage() {
     const [loading, setLoading] = useState(true);
     const [isPostcodeOpen, setIsPostcodeOpen] = useState(false);
 
-    // ✅ [추가] 기존 이미지
+    // ✅ 기존 이미지
     const [existingImages, setExistingImages] = useState([]);
-    // ✅ [추가] 삭제 체크된 기존 이미지 id
+    // ✅ 삭제 체크된 기존 이미지 id
     const [deleteImageIds, setDeleteImageIds] = useState([]);
-    // ✅ [추가] 새로 추가할 파일
+    // ✅ 새로 추가할 파일
     const [newImageFiles, setNewImageFiles] = useState([]);
-    // ✅ [추가] 새 이미지 미리보기
+    // ✅ 새 이미지 미리보기
     const [newPreviewUrls, setNewPreviewUrls] = useState([]);
 
     const formatPriceWithComma = (value) => {
@@ -112,7 +112,7 @@ export default function ProductEditPage() {
         }
     };
 
-    // ✅ [추가] 새 이미지 선택
+    // ✅ 수정: 새 이미지 누적 추가
     const handleNewImageChange = (e) => {
         const files = Array.from(e.target.files || []);
 
@@ -120,22 +120,51 @@ export default function ProductEditPage() {
             (img) => !deleteImageIds.includes(img.productImageId)
         ).length;
 
-        if (remainExistingCount + files.length > 5) {
-            alert("이미지는 최대 5장까지 가능합니다.");
-            return;
-        }
+        setNewImageFiles((prev) => {
+            const newFiles = [...prev, ...files];
 
-        setNewImageFiles(files);
-        setNewPreviewUrls(files.map((file) => URL.createObjectURL(file)));
+            if (remainExistingCount + newFiles.length > 5) {
+                alert("이미지는 최대 5장까지 가능합니다.");
+                return prev;
+            }
+
+            return newFiles;
+        });
+
+        setNewPreviewUrls((prev) => {
+            const newUrls = files.map((file) => URL.createObjectURL(file));
+
+            if (remainExistingCount + prev.length + newUrls.length > 5) {
+                newUrls.forEach((url) => URL.revokeObjectURL(url));
+                return prev;
+            }
+
+            return [...prev, ...newUrls];
+        });
+
+        e.target.value = "";
     };
 
-    // ✅ [추가] 기존 이미지 삭제 체크
+    // ✅ 기존 이미지 삭제 체크
     const handleToggleDeleteImage = (imageId) => {
         setDeleteImageIds((prev) =>
             prev.includes(imageId)
                 ? prev.filter((id) => id !== imageId)
                 : [...prev, imageId]
         );
+    };
+
+    // ✅ 추가: 새 이미지 개별 삭제
+    const handleRemoveNewImage = (index) => {
+        setNewImageFiles((prev) => prev.filter((_, i) => i !== index));
+
+        setNewPreviewUrls((prev) => {
+            const targetUrl = prev[index];
+            if (targetUrl) {
+                URL.revokeObjectURL(targetUrl);
+            }
+            return prev.filter((_, i) => i !== index);
+        });
     };
 
     useEffect(() => {
@@ -157,7 +186,6 @@ export default function ProductEditPage() {
                     content: data.content || "",
                 });
 
-                // ✅ [추가]
                 setExistingImages(data.productImages || []);
             } catch (error) {
                 console.error(error);
@@ -233,6 +261,13 @@ export default function ProductEditPage() {
         });
     }, [loading, userInfo, form.location]);
 
+    // ✅ 추가: 새 미리보기 URL 정리
+    useEffect(() => {
+        return () => {
+            newPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+        };
+    }, [newPreviewUrls]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -246,12 +281,10 @@ export default function ProductEditPage() {
             formData.append("location", form.location);
             formData.append("content", form.content);
 
-            // ✅ [추가] 삭제할 기존 이미지 id
             deleteImageIds.forEach((id) => {
                 formData.append("deleteImageIds", id);
             });
 
-            // ✅ [추가] 새 이미지
             newImageFiles.forEach((file) => {
                 formData.append("newImages", file);
             });
@@ -329,7 +362,6 @@ export default function ProductEditPage() {
 
                 <form className="product-create-form" onSubmit={handleSubmit}>
                     <div className="product-create-top">
-                        {/* ✅ [추가] 이미지 수정 카드 */}
                         <section className="product-create-card image-card">
                             <div className="section-head">
                                 <div>
@@ -339,7 +371,10 @@ export default function ProductEditPage() {
                             </div>
 
                             {existingImages.length > 0 && (
-                                <div className="image-preview-list" style={{ marginBottom: "16px" }}>
+                                <div
+                                    className="image-preview-list"
+                                    style={{ marginBottom: "16px" }}
+                                >
                                     {existingImages.map((image) => {
                                         const checked = deleteImageIds.includes(image.productImageId);
 
@@ -349,31 +384,18 @@ export default function ProductEditPage() {
                                                 key={image.productImageId}
                                                 style={{
                                                     position: "relative",
-                                                    opacity: checked ? 0.45 : 1,
+                                                    opacity: deleteImageIds.includes(image.productImageId) ? 0.4 : 1,
                                                 }}
                                             >
                                                 <img src={image.imagePath} alt={image.originalName} />
-                                                <label
-                                                    style={{
-                                                        position: "absolute",
-                                                        top: "8px",
-                                                        left: "8px",
-                                                        background: "rgba(0,0,0,0.6)",
-                                                        color: "#fff",
-                                                        padding: "4px 8px",
-                                                        borderRadius: "8px",
-                                                        fontSize: "12px",
-                                                        cursor: "pointer",
-                                                    }}
+
+                                                <button
+                                                    type="button"
+                                                    className="image-remove-btn"
+                                                    onClick={() => handleToggleDeleteImage(image.productImageId)}
                                                 >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={checked}
-                                                        onChange={() => handleToggleDeleteImage(image.productImageId)}
-                                                        style={{ marginRight: "6px" }}
-                                                    />
-                                                    삭제
-                                                </label>
+                                                    ×
+                                                </button>
                                             </div>
                                         );
                                     })}
@@ -390,13 +412,25 @@ export default function ProductEditPage() {
                                 <div className="image-upload-content">
                                     <div className="image-upload-plus">+</div>
                                     <strong>새 이미지 추가</strong>
-                                    <span>선택한 이미지는 수정 시 반영됩니다.</span>
+                                    <span>여러 번 나눠서 추가할 수 있어요.</span>
 
                                     {newPreviewUrls.length > 0 && (
                                         <div className="image-preview-list">
                                             {newPreviewUrls.map((url, index) => (
                                                 <div className="image-preview" key={index}>
                                                     <img src={url} alt={`새 미리보기 ${index + 1}`} />
+
+                                                    <button
+                                                        type="button"
+                                                        className="image-remove-btn"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            handleRemoveNewImage(index);
+                                                        }}
+                                                    >
+                                                        ×
+                                                    </button>
                                                 </div>
                                             ))}
                                         </div>

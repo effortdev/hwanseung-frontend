@@ -32,7 +32,8 @@ const TradeChatTest = () => {
   // 🚀 '채팅하기' 버튼 클릭 시
   const startTradeChat = async () => {
     try {
-      const res = await axios.post('http://localhost/api/chat/room/trade', {
+      // const res = await axios.post('http://localhost/api/chat/room/trade', {
+      const res = await axios.post('/api/chat/room/trade', {
         itemId: mockProduct.itemId,
         sellerId: mockProduct.sellerId
       }, {
@@ -42,7 +43,8 @@ const TradeChatTest = () => {
       const realRoomId = res.data.roomId;
       setRoomId(realRoomId);
 
-      const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`, {
+      // const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`, {
+      const historyRes = await axios.get(`/api/chat/room/${realRoomId}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(historyRes.data);
@@ -58,7 +60,8 @@ const TradeChatTest = () => {
   // 🚀 STOMP 연결
   const connectStomp = (currentRoomId) => {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      // webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      webSocketFactory: () => new SockJS('/ws-chat'),
       connectHeaders: { Authorization: `Bearer ${token}` },
       onConnect: () => {
         console.log("중고거래 웹소켓 연결 성공! 방 번호:", currentRoomId);

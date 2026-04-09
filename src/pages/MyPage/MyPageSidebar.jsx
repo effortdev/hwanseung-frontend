@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react'; 
-import axios from 'axios'; 
-import { NavLink, useNavigate } from 'react-router-dom'; 
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 export default function MyPageSidebar({ userInfo }) {
     const navigate = useNavigate();
+    const IMG_BASE_URL = "http://localhost:8080";
 
     const handleLogout = () => {
         sessionStorage.removeItem("accessToken");
@@ -16,18 +17,18 @@ export default function MyPageSidebar({ userInfo }) {
     const [balance, setBalance] = useState(0);
 
     // 2. 사이드바 화면이 처음 켜질 때 딱 한 번 실행 (잔액 물어보기)
-   // 🌟 무전기 수신기 설치 완료!
+    // 🌟 무전기 수신기 설치 완료!
     useEffect(() => {
         const fetchBalance = async () => {
             const token = sessionStorage.getItem('accessToken');
-            if (!token) return; 
+            if (!token) return;
 
             try {
                 // 💡 주의: 백엔드 주소가 /api/v1/pay/balance 인지 /api/pay/balance 인지 확인하고 맞춰주세요!
                 const response = await axios.get('/api/v1/pay/balance', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                setBalance(response.data); 
+                setBalance(response.data);
             } catch (error) {
                 console.error("잔액을 불러오지 못했습니다.", error);
             }
@@ -48,13 +49,22 @@ export default function MyPageSidebar({ userInfo }) {
         <aside className="sidebar">
             {/* 프로필 영역 */}
             <div className="sidebar-profile">
-                <div className="avatar">👤</div>
+                <div className="avatar" >
+                    {userInfo?.profileImagePath ? (
+                        <img
+                            src={`${IMG_BASE_URL}${userInfo.profileImagePath}`}
+                            alt="Profile"
+                        />
+                    ) : (
+                        <span style={{ fontSize: '24px' }}>👤</span>
+                    )}
+                </div>
                 <div className="info">
                     <div className="name-wrapper">
                         <p className="name">{userInfo?.nickname}</p>
                         <NavLink to="/mypage" className="edit-profile-btn-link">
-                            <button className="edit-profile-btn" title="정보 수정">
-                                수정
+                            <button className="edit-profile-btn">
+                                내정보 보기
                             </button>
                         </NavLink>
                     </div>
@@ -74,15 +84,15 @@ export default function MyPageSidebar({ userInfo }) {
 
                 <NavLink to="/sales" className={({ isActive }) => (isActive ? 'active' : '')}>
                     <button>
-                        <i className="fas fa-box-open"></i> 판매 내역
+                        <i className="fas fa-box-open"></i> 거래 내역
                     </button>
                 </NavLink>
 
-                <NavLink to="/purchase" className={({ isActive }) => (isActive ? 'active' : '')}>
+                {/* <NavLink to="/purchase" className={({ isActive }) => (isActive ? 'active' : '')}>
                     <button>
                         <i className="fas fa-shopping-bag"></i> 구매 내역
                     </button>
-                </NavLink>
+                </NavLink> */}
 
                 <NavLink to="/wishlist" className={({ isActive }) => (isActive ? 'active' : '')}>
                     <button>

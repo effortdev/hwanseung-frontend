@@ -31,7 +31,8 @@ const AdminChatManager = () => {
   // 🚀 전체 방 목록 불러오기 API 호출
   const fetchRooms = async () => {
     try {
-      const res = await axios.get('http://localhost/api/chat/admin/rooms', {
+      // const res = await axios.get('http://localhost/api/chat/admin/rooms', {
+      const res = await axios.get('/api/chat/admin/rooms', {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log("백엔드가 준 방 목록 데이터:", res.data);
@@ -50,7 +51,8 @@ const AdminChatManager = () => {
     setSelectedRoomId(roomId);
 
     try {
-      const historyRes = await axios.get(`http://localhost/api/chat/room/${roomId}/messages`, {
+      // const historyRes = await axios.get(`http://localhost/api/chat/room/${roomId}/messages`, {
+      const historyRes = await axios.get(`/api/chat/room/${roomId}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(historyRes.data);
@@ -63,7 +65,8 @@ const AdminChatManager = () => {
   // 🚀 STOMP 웹소켓 연결 로직 (고객용과 동일)
   const connectStomp = (roomId) => {
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      // webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      webSocketFactory: () => new SockJS('/ws-chat'),
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },

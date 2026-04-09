@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react"; // ✅ 수정: useRef 추가
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { FiHeart, FiMessageCircle } from "react-icons/fi";
+import { FiHeart, FiMessageCircle, FiMapPin } from "react-icons/fi";
 import { FaHeart } from "react-icons/fa";
 import "./ProductListPage.css";
 
@@ -49,6 +49,7 @@ function getUserInfoFromToken() {
 export default function ProductListPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const filterParam = searchParams.get("filter");
 
     const [products, setProducts] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState("all");
@@ -56,6 +57,10 @@ export default function ProductListPage() {
     const [sortType, setSortType] = useState("latest");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [visibleCount, setVisibleCount] = useState(12);
+    const [imageErrorMap, setImageErrorMap] = useState({});
+
+    const observerTargetRef = useRef(null); // ✅ 추가: 무한스크롤 감지용 ref
 
     const userInfo = getUserInfoFromToken();
     const loginUserId = userInfo?.userId;
@@ -85,8 +90,8 @@ export default function ProductListPage() {
                     method: "GET",
                     headers: token
                         ? {
-                            Authorization: `Bearer ${token}`,
-                        }
+                              Authorization: `Bearer ${token}`,
+                          }
                         : {},
                 });
 
@@ -96,6 +101,7 @@ export default function ProductListPage() {
 
                 const data = await response.json();
                 setProducts(data);
+                setImageErrorMap({});
             } catch (err) {
                 console.error("상품 목록 조회 실패:", err);
                 setError("상품 목록을 불러오는 중 오류가 발생했습니다.");
@@ -141,10 +147,10 @@ export default function ProductListPage() {
                 prev.map((item) =>
                     item.productId === product.productId
                         ? {
-                            ...item,
-                            liked: result.liked,
-                            likeCount: result.likeCount,
-                        }
+                              ...item,
+                              liked: result.liked,
+                              likeCount: result.likeCount,
+                          }
                         : item
                 )
             );
@@ -176,19 +182,19 @@ export default function ProductListPage() {
                 (product.location &&
                     product.location.toLowerCase().includes(lowerKeyword));
 
-            return matchCategory && matchKeyword;
+                    const matchPopular = filterParam === "popular" ? ((product.likeCount || 0) >= 2): true;
+
+            return matchCategory && matchKeyword && matchPopular;
         });
 
         result.sort((a, b) => {
             const aSoldOut = a.saleStatus === "SOLD_OUT" ? 1 : 0;
             const bSoldOut = b.saleStatus === "SOLD_OUT" ? 1 : 0;
 
-            // 1. 판매중 먼저, 판매완료 나중
             if (aSoldOut !== bSoldOut) {
                 return aSoldOut - bSoldOut;
             }
 
-            // 2. 같은 상태끼리만 선택 정렬 적용
             if (sortType === "priceAsc") {
                 return a.price - b.price;
             }
@@ -197,12 +203,47 @@ export default function ProductListPage() {
                 return b.price - a.price;
             }
 
-            // latest
             return b.productId - a.productId;
         });
 
         return result;
-    }, [products, selectedCategory, keyword, sortType]);
+    }, [products, selectedCategory, keyword, sortType, filterParam]);
+
+    useEffect(() => {
+        setVisibleCount(12);
+    }, [selectedCategory, keyword, sortType]);
+
+    useEffect(() => {
+        if (loading || error) return;
+        if (visibleCount >= filteredProducts.length) return;
+
+        const target = observerTargetRef.current;
+        if (!target) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const firstEntry = entries[0];
+
+                if (firstEntry.isIntersecting) {
+                    setVisibleCount((prev) =>
+                        Math.min(prev + 12, filteredProducts.length)
+                    );
+                }
+            },
+            {
+                root: null,
+                rootMargin: "0px 0px 200px 0px", // ✅ 추가: 미리 로드
+                threshold: 0,
+            }
+        );
+
+        observer.observe(target);
+
+        return () => {
+            observer.unobserve(target);
+            observer.disconnect();
+        };
+    }, [loading, error, visibleCount, filteredProducts.length]); // ✅ 수정: scroll 이벤트 제거
 
     return (
         <div className="product-list-page">
@@ -294,87 +335,122 @@ export default function ProductListPage() {
                 )}
 
                 {!loading && !error && filteredProducts.length > 0 && (
-                    <section className="product-grid">
-                        {filteredProducts.map((product) => {
-                            const isSoldOut = product.saleStatus === "SOLD_OUT";
-                            const isMyProduct = loginUserId && product.sellerId === loginUserId;
-                            const disableLike = isSoldOut || isMyProduct;
+                    <>
+                        <section className="product-grid">
+                            {filteredProducts.slice(0, visibleCount).map((product) => {
+                                const isReserved = product.saleStatus === "RESERVED";
+                                const isSoldOut = product.saleStatus === "SOLD_OUT";
+                                const isMyProduct = loginUserId && product.sellerId === loginUserId;
+                                const disableLike = isSoldOut || isMyProduct;
+                                const hasBrokenImage = imageErrorMap[product.productId];
 
-                            return (
-                                <article
-                                    key={product.productId}
-                                    className={`product-card ${isSoldOut ? "soldout" : ""}`}
-                                    onClick={() => navigate(`/products/${product.productId}`)}
-                                >
-                                    <div className="product-thumb">
-                                        {product.thumbnailUrl ? (
-                                            <img src={`http://localhost:8080${product.thumbnailUrl}`} alt={product.title} />
-                                        ) : (
-                                            <div className="product-thumb-empty">
-                                                <span>환승마켓</span>
-                                            </div>
-                                        )}
+                                return (
+                                    <article
+                                        key={product.productId}
+                                        className={`product-card ${isSoldOut ? "soldout" : ""}`}
+                                        onClick={() => navigate(`/products/${product.productId}`)}
+                                    >
+                                        <div className="product-thumb">
+                                            {product.thumbnailUrl && !hasBrokenImage ? (
+                                                <img
+                                                    // src={`http://localhost:8080${product.thumbnailUrl}`}
+                                                src={`${product.thumbnailUrl}`}
+                                                    alt={product.title}
+                                                    onError={() => {
+                                                        setImageErrorMap((prev) => ({
+                                                            ...prev,
+                                                            [product.productId]: true,
+                                                        }));
+                                                    }}
+                                                />
+                                            ) : (
+                                                <div className="product-thumb-empty">
+                                                    <span className="product-thumb-empty-icon">📦</span>
+                                                </div>
+                                            )}
 
-                                        {isSoldOut && (
-                                            <div className="product-soldout-overlay">
-                                                판매완료
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    <div className="product-card-body">
-                                        <div className="product-card-top">
-                                            <span className="product-category-chip">
-                                                {categoryMap[product.category] || product.category}
-                                            </span>
+                                            {isSoldOut && (
+                                                <div className="product-soldout-overlay">
+                                                    판매완료
+                                                </div>
+                                            )}
                                         </div>
 
-                                        <h3 className="product-title">{product.title}</h3>
-
-                                        <p className="product-price">
-                                            {formatPrice(product.price)}원
-                                        </p>
-
-                                        <div className="product-meta">
-                                            <span>{product.location}</span>
-                                            <span className="dot">•</span>
-                                            <span style={{ display: "none" }}>
-                                                {product.sellerId}
-                                            </span>
-                                            <span>{product.sellerNickname}</span>
-                                        </div>
-
-                                        <div className="product-card-bottom">
-                                            <div className="product-sale-status-text">
-                                                {isSoldOut ? "판매완료" : "판매중"}
-                                            </div>
-
-                                            <div className="product-count-group">
-                                                <button
-                                                    type="button"
-                                                    className={`product-like-btn ${product.liked ? "active" : ""}`}
-                                                    disabled={disableLike}
-                                                    onClick={(e) => handleLikeToggle(e, product)}
-                                                >
-                                                    {product.liked ? (
-                                                        <FaHeart className="product-like-icon active" />
-                                                    ) : (
-                                                        <FiHeart className="product-like-icon" />
-                                                    )}
-                                                    <span className="product-like-count">{product.likeCount}</span>
-                                                </button>
-
-                                                <span className="product-chat-count">
-                                                    <FiMessageCircle className="product-chat-icon" />
-                                                    <span className="product-chat-value">{product.chatCount ?? 0}</span>
+                                        <div className="product-card-body">
+                                            <div className="product-card-top">
+                                                <span className="product-category-chip">
+                                                    {categoryMap[product.category] || product.category}
                                                 </span>
                                             </div>
+
+                                            <h3 className="product-title">{product.title}</h3>
+
+                                            <p className="product-price">
+                                                {formatPrice(product.price)}원
+                                            </p>
+
+                                            <div className="product-meta">
+                                                <span className="product-meta-location">
+                                                    <FiMapPin className="product-meta-location-icon" />
+                                                    <span className="product-meta-location-text">
+                                                        {product.location}
+                                                    </span>
+                                                </span>
+                                                <span className="dot">•</span>
+                                                <span style={{ display: "none" }}>
+                                                    {product.sellerId}
+                                                </span>
+                                                <span>{product.sellerNickname}</span>
+                                            </div>
+
+                                            <div className="product-card-bottom">
+                                                <div
+                                                    className={`product-sale-status-text ${
+                                                        isReserved ? "reserved" : ""
+                                                    }`}
+                                                >
+                                                    {isSoldOut
+                                                        ? "판매완료"
+                                                        : isReserved
+                                                        ? "예약중"
+                                                        : "판매중"}
+                                                </div>
+
+                                                <div className="product-count-group">
+                                                    <button
+                                                        type="button"
+                                                        className={`product-like-btn ${
+                                                            product.liked ? "active" : ""
+                                                        }`}
+                                                        disabled={disableLike}
+                                                        onClick={(e) => handleLikeToggle(e, product)}
+                                                    >
+                                                        {product.liked ? (
+                                                            <FaHeart className="product-like-icon active" />
+                                                        ) : (
+                                                            <FiHeart className="product-like-icon" />
+                                                        )}
+                                                        <span className="product-like-count">
+                                                            {product.likeCount}
+                                                        </span>
+                                                    </button>
+
+                                                    <span className="product-chat-count">
+                                                        <FiMessageCircle className="product-chat-icon" />
+                                                        <span className="product-chat-value">
+                                                            {product.chatCount ?? 0}
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                </article>
-                            );
-                        })}
-                    </section>
+                                    </article>
+                                );
+                            })}
+                        </section>
+
+                        <div ref={observerTargetRef} className="product-list-observer" /> {/* ✅ 추가 */}
+                    </>
                 )}
             </div>
         </div>

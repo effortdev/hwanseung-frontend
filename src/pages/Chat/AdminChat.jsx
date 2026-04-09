@@ -41,7 +41,8 @@ const AdminChat = () => {
           }
         };
 
-        const roomRes = await axios.post('http://localhost/api/chat/room/admin', {
+        // const roomRes = await axios.post('http://localhost/api/chat/room/admin', {
+        const roomRes = await axios.post('/api/chat/room/admin', {
         },axiosConfig);
         
         let realRoomId = roomRes.data.roomId;
@@ -53,7 +54,8 @@ const AdminChat = () => {
         setRoomId(realRoomId); // 받아온 진짜 UUID 방 번호를 상태에 저장
 
         // (보너스!) 방 번호를 알았으니 이전 대화 기록도 깔끔하게 불러옵니다.
-        const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`);
+        // const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`);
+        const historyRes = await axios.get(`/api/chat/room/${realRoomId}/messages`);
         setMessages(historyRes.data);
 
         // 이전 기록까지 다 불렀으면, 그 방 번호로 웹소켓 연결 시작!
@@ -74,7 +76,8 @@ const AdminChat = () => {
 
     const token = sessionStorage.getItem("accessToken");
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      // webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      webSocketFactory: () => new SockJS('/ws-chat'),
       connectHeaders: {
         Authorization: `Bearer ${token}` 
       },

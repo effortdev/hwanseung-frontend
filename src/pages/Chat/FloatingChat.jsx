@@ -51,7 +51,7 @@ const FloatingChat = () => {
 
     // 플로팅 아이콘 전용 "알림 수신기" 연결
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      webSocketFactory: () => new SockJS('/ws-chat'),
       connectHeaders: { Authorization: `Bearer ${token}` },
       onConnect: () => {
         // 내 알림 전용 주파수에 귀를 엽니다.
@@ -103,7 +103,8 @@ const FloatingChat = () => {
   const fetchMyChatRooms = async () => {
     if (!token) return;
     try {
-      const res = await axios.get('http://localhost/api/chat/my-rooms', {
+      // const res = await axios.get('http://localhost/api/chat/my-rooms', {
+      const res = await axios.get('/api/chat/my-rooms', {
         headers: { Authorization: `Bearer ${token}` }
       });
       setChatRooms(res.data);
@@ -130,7 +131,8 @@ const FloatingChat = () => {
       });
 
       try {
-        const historyRes = await axios.get(`http://localhost/api/chat/room/${roomId}/messages`, {
+        // const historyRes = await axios.get(`http://localhost/api/chat/room/${roomId}/messages`, {
+        const historyRes = await axios.get(`/api/chat/room/${roomId}/messages`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setMessages(historyRes.data);
@@ -167,7 +169,8 @@ const FloatingChat = () => {
     setChatRooms(prev => prev.map(r => r.roomId === room.roomId ? { ...r, unreadCount: 0 } : r));
     
     try {
-      const historyRes = await axios.get(`http://localhost/api/chat/room/${room.roomId}/messages`, {
+      // const historyRes = await axios.get(`http://localhost/api/chat/room/${room.roomId}/messages`, {
+      const historyRes = await axios.get(`/api/chat/room/${room.roomId}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(historyRes.data);
@@ -179,7 +182,8 @@ const FloatingChat = () => {
 
   const startAdminChat = async () => {
     try {
-      const roomRes = await axios.post('http://localhost/api/chat/room/admin', {}, { 
+      // const roomRes = await axios.post('http://localhost/api/chat/room/admin', {}, { 
+      const roomRes = await axios.post('/api/chat/room/admin', {}, { 
         headers: { Authorization: `Bearer ${token}` } 
       });
       const realRoomId = roomRes.data.roomId;
@@ -187,7 +191,8 @@ const FloatingChat = () => {
       setActiveRoom({ roomId: realRoomId, buyerId: "환승마켓 고객센터", itemName: "1:1 문의", unreadCount: 0 });
       setMessages([]);
 
-      const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`, {
+      // const historyRes = await axios.get(`http://localhost/api/chat/room/${realRoomId}/messages`, {
+      const historyRes = await axios.get(`/api/chat/room/${realRoomId}/messages`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(historyRes.data);
@@ -206,7 +211,8 @@ const FloatingChat = () => {
     }
 
     const client = new Client({
-      webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      // webSocketFactory: () => new SockJS('http://localhost/ws-chat'),
+      webSocketFactory: () => new SockJS('/ws-chat'),
       connectHeaders: { Authorization: `Bearer ${token}` },
       onConnect: () => {
         client.subscribe(`/sub/chat/room/${currentRoomId}`, (message) => {
@@ -251,7 +257,8 @@ const FloatingChat = () => {
     formData.append('file', file); 
 
     try {
-      const uploadRes = await axios.post('http://localhost/api/chat/image', formData, {
+      // const uploadRes = await axios.post('http://localhost/api/chat/image', formData, {
+      const uploadRes = await axios.post('/api/chat/image', formData, {
         headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
       });
       const imageUrl = uploadRes.data; 
@@ -352,9 +359,11 @@ const FloatingChat = () => {
                       <div className={`chat-bubble ${isImage ? 'image-bubble' : ''}`}>
                         {isImage ? (
                           <img 
-                            src={`http://localhost${msg.content}`} 
+                            // src={`http://localhost${msg.content}`} 
+                            src={`${msg.content}`} 
                             alt="전송된 이미지" 
-                            onClick={() => setSelectedImage(`http://localhost${msg.content}`)}
+                            // onClick={() => setSelectedImage(`http://localhost${msg.content}`)}
+                            onClick={() => setSelectedImage(`${msg.content}`)}
                           />
                         ) : (
                           msg.content
