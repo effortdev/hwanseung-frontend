@@ -1,5 +1,3 @@
-import React from 'react';
-import { Link } from 'react-router-dom'; // 🚨 리액트 라우터의 Link 기능 임포트!
 import './Footer.css';
 
 const Footer = () => {
